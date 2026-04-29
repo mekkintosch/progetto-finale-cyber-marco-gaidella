@@ -63,6 +63,7 @@ class ArticleController extends Controller implements HasMiddleware
             'slug' => Str::slug($request->title),
         ]);
 
+
         $tags = explode(',', $request->tags);
 
         foreach ($tags as $i => $tag) {
@@ -75,6 +76,13 @@ class ArticleController extends Controller implements HasMiddleware
             ]);
             $article->tags()->attach($newTag);
         }
+
+        Log::info('Articolo creato', [
+            'user_id' => Auth::id(),
+            'article_id' => $article->id,
+            'title' => $article->title,
+            'ip' => $request->ip()
+        ]);
 
         return redirect(route('homepage'))->with('message', 'Articolo creato con successo');
     }
@@ -95,6 +103,7 @@ class ArticleController extends Controller implements HasMiddleware
         if (Auth::user()->id != $article->user_id) {
             return redirect()->route('homepage')->with('alert', 'Accesso non consentito');
         }
+
         return view('articles.edit', compact('article'));
     }
 
@@ -144,6 +153,12 @@ class ArticleController extends Controller implements HasMiddleware
         }
         $article->tags()->sync($newTags);
 
+        Log::info('Articolo modificato', [
+            'user_id' => Auth::id(),
+            'article_id' => $article->id,
+            'ip' => $request->ip()
+        ]);
+
         return redirect(route('writer.dashboard'))->with('message', 'Articolo modificato con successo');
     }
 
@@ -156,6 +171,11 @@ class ArticleController extends Controller implements HasMiddleware
             $article->tags()->detach($tag);
         }
         $article->delete();
+
+        Log::info('Articolo eliminato', [
+            'user_id' => Auth::id(),
+            'article_id' => $article->id
+        ]);
 
         return redirect()->back()->with('message', 'Articolo cancellato con successo');
     }
