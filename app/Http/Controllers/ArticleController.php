@@ -53,10 +53,12 @@ class ArticleController extends Controller implements HasMiddleware
             'tags' => 'required'
         ]);
 
+        $body = strip_tags($request->body);
+
         $article = Article::create([
             'title' => $request->title,
             'subtitle' => $request->subtitle,
-            'body' => $request->body,
+            'body' => $body,
             'image' => $request->file('image')->store('images', 'public'),
             'category_id' => $request->category,
             'user_id' => Auth::user()->id,
@@ -121,10 +123,12 @@ class ArticleController extends Controller implements HasMiddleware
             'tags' => 'required'
         ]);
 
+        $body = strip_tags($request->body);
+
         $article->update([
             'title' => $request->title,
             'subtitle' => $request->subtitle,
-            'body' => $request->body,
+            'body' => $body,
             'category_id' => $request->category,
             'slug' => Str::slug($request->title),
         ]);
@@ -151,6 +155,7 @@ class ArticleController extends Controller implements HasMiddleware
             ]);
             $newTags[] = $newTag->id;
         }
+
         $article->tags()->sync($newTags);
 
         Log::info('Articolo modificato', [
@@ -159,9 +164,9 @@ class ArticleController extends Controller implements HasMiddleware
             'ip' => $request->ip()
         ]);
 
-        return redirect(route('writer.dashboard'))->with('message', 'Articolo modificato con successo');
+        return redirect(route('writer.dashboard'))
+            ->with('message', 'Articolo modificato con successo');
     }
-
     /**
      * Remove the specified resource from storage.
      */
