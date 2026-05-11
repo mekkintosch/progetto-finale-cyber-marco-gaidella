@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ArticleController extends Controller implements HasMiddleware
 {
+     use AuthorizesRequests;
     public static function middleware()
     {
         return [
@@ -102,9 +104,7 @@ class ArticleController extends Controller implements HasMiddleware
      */
     public function edit(Article $article)
     {
-        if (Auth::user()->id != $article->user_id) {
-            return redirect()->route('homepage')->with('alert', 'Accesso non consentito');
-        }
+        $this->authorize('update', $article);
 
         return view('articles.edit', compact('article'));
     }

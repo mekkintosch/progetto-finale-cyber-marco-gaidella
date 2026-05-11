@@ -67,5 +67,5 @@ class FortifyServiceProvider extends ServiceProvider
                 'user_id' => $event->user->id ?? null
             ]);
         });
-    }
+    }   
 }
